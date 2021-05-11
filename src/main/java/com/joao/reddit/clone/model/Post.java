@@ -13,11 +13,11 @@ import java.time.Instant;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
-@Data
+@Data // Getter and Setters
 @Entity
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@AllArgsConstructor //Constructor with fields
+@NoArgsConstructor //Empty constructor
 public class Post {
     @Id
     @GeneratedValue(strategy = IDENTITY)
