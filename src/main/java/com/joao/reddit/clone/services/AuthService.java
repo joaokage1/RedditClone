@@ -8,11 +8,9 @@ import com.joao.reddit.clone.repository.UserRepository;
 import com.joao.reddit.clone.repository.VerificationTokenRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -26,7 +24,6 @@ public class AuthService {
     private final VerificationTokenRepository verificationTokenRepository;
     private final MailService mailService;
 
-    @Transactional
     public void signup(RegisterRequest request){
 
         User user = new User();
