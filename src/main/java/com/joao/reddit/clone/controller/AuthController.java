@@ -6,10 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -23,5 +20,12 @@ public class AuthController {
     public ResponseEntity<String> signup(@RequestBody RegisterRequest request){
         getAuthService().signup(request);
         return new ResponseEntity<>("User Registration Successful", HttpStatus.OK);
+    }
+
+    @GetMapping("accountVerification/{token}")
+    private  ResponseEntity<String> verifyAccount(@PathVariable String token){
+        getAuthService().verifyAccount(token);
+
+        return new ResponseEntity<>("Account Activated Successfully",HttpStatus.OK);
     }
 }

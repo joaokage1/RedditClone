@@ -13,7 +13,7 @@ import java.time.Instant;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collation = "token")
+@Document
 public class VerificationToken {
 
     @Id

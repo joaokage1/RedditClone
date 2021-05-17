@@ -1,6 +1,7 @@
 package com.joao.reddit.clone.services;
 
 import com.joao.reddit.clone.dto.RegisterRequest;
+import com.joao.reddit.clone.exceptions.SpringRedditException;
 import com.joao.reddit.clone.model.NotificationEmail;
 import com.joao.reddit.clone.model.User;
 import com.joao.reddit.clone.model.VerificationToken;
@@ -11,7 +12,9 @@ import lombok.Data;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotBlank;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -51,5 +54,19 @@ public class AuthService {
 
         getVerificationTokenRepository().save(verificationToken);
         return token;
+    }
+
+    public void verifyAccount(String token) {
+        Optional<VerificationToken> tokenOptional = getVerificationTokenRepository().findByToken(token);
+        tokenOptional.orElseThrow(() -> new SpringRedditException("Invalid Token"));
+        fetchUserAndEnable(tokenOptional.get());
+    }
+
+    private void fetchUserAndEnable(VerificationToken verificationToken) {
+        @NotBlank(message = "Username is required") String username = verificationToken.getUser().getUsername();
+        User user = getUserRepository().findByUsername(username).orElseThrow(() -> new SpringRedditException("User not found with name - " + username));
+        user.setEnabled(true);
+
+        getUserRepository().save(user);
     }
 }
