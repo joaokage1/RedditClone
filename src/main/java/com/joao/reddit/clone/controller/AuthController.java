@@ -1,5 +1,7 @@
 package com.joao.reddit.clone.controller;
 
+import com.joao.reddit.clone.dto.AuthenticationResponse;
+import com.joao.reddit.clone.dto.LoginRequest;
 import com.joao.reddit.clone.dto.RegisterRequest;
 import com.joao.reddit.clone.services.AuthService;
 import lombok.AllArgsConstructor;
@@ -27,5 +29,10 @@ public class AuthController {
         getAuthService().verifyAccount(token);
 
         return new ResponseEntity<>("Account Activated Successfully",HttpStatus.OK);
+    }
+
+    @PostMapping("/login")
+    public AuthenticationResponse login(@RequestBody LoginRequest loginRequest){
+        return getAuthService().login(loginRequest);
     }
 }
