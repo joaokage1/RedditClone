@@ -1,20 +1,16 @@
 package com.joao.reddit.clone.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class SubredditDTO {
-
-    @Id
-    private String id;
-    private String name;
+public class PostRequest {
+    private String postId;
+    private String subredditName;
+    private String postName;
+    private String url;
     private String description;
-    private Integer numberOfPosts;
 }

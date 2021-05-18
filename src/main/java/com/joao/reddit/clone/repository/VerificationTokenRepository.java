@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface VerificationTokenRepository extends MongoRepository<VerificationToken, Long> {
+public interface VerificationTokenRepository extends MongoRepository<VerificationToken, String> {
     Optional<VerificationToken> findByToken(String token);
 }

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface SubredditRepository extends MongoRepository<Subreddit, Long> {
+public interface SubredditRepository extends MongoRepository<Subreddit, String> {
 
     Optional<Subreddit> findByName(String subredditName);
 }

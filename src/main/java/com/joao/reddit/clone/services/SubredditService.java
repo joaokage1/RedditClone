@@ -1,6 +1,8 @@
 package com.joao.reddit.clone.services;
 
 import com.joao.reddit.clone.dto.SubredditDTO;
+import com.joao.reddit.clone.exceptions.SpringRedditException;
+import com.joao.reddit.clone.mapper.SubredditMapper;
 import com.joao.reddit.clone.model.Subreddit;
 import com.joao.reddit.clone.repository.SubredditRepository;
 import lombok.AllArgsConstructor;
@@ -18,28 +20,21 @@ import java.util.stream.Collectors;
 public class SubredditService {
 
     private final SubredditRepository repository;
+    private final SubredditMapper mapper;
 
     public SubredditDTO create(SubredditDTO subredditDTO){
-        Subreddit subreddit = getRepository().save(mapSubredditDTO(subredditDTO));
+        Subreddit subreddit = getRepository().save(getMapper().mapDtoToSubreddit(subredditDTO));
 
         subredditDTO.setId(subreddit.getId());
         return subredditDTO;
     }
 
-    private Subreddit mapSubredditDTO(SubredditDTO subredditDTO) {
-        return Subreddit.builder().name(subredditDTO.getName())
-                .description(subredditDTO.getDesc()).build();
-    }
-
     public List<SubredditDTO> fetchAll() {
-        return getRepository().findAll().stream().map(this::mapToDTO).collect(Collectors.toList());
+        return getRepository().findAll().stream().map(getMapper()::mapSubredditToDto).collect(Collectors.toList());
     }
 
-    private SubredditDTO mapToDTO(Subreddit subreddit) {
-        return SubredditDTO.builder().name(subreddit.getName())
-                .desc(subreddit.getDescription())
-                .id(subreddit.getId())
-                .numberOfPosts(subreddit.getPosts() != null ? subreddit.getPosts().size() : null)
-                .build();
+    public SubredditDTO fetchById(String id){
+        Subreddit subreddit = getRepository().findById(id).orElseThrow(() -> new SpringRedditException("No Subreddit found"));
+        return getMapper().mapSubredditToDto(subreddit);
     }
 }
