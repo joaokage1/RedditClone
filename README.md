@@ -1,3 +1,3 @@
 # RedditClone
-Reddit clone using Spring Boot, Angular and MongoDB
+Reddit clone using Spring Boot, Angular and MySQL
 
