@@ -2,6 +2,7 @@ package com.joao.reddit.clone.services;
 
 import com.joao.reddit.clone.dto.AuthenticationResponse;
 import com.joao.reddit.clone.dto.LoginRequest;
+import com.joao.reddit.clone.dto.RefreshTokenRequest;
 import com.joao.reddit.clone.dto.RegisterRequest;
 import com.joao.reddit.clone.exceptions.SpringRedditException;
 import com.joao.reddit.clone.model.NotificationEmail;
@@ -37,6 +38,7 @@ public class AuthService {
     private final MailService mailService;
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
+    private final RefreshTokenService refreshTokenService;
 
     public void signup(RegisterRequest request){
 
@@ -85,7 +87,12 @@ public class AuthService {
         Authentication authenticate = getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authenticate);
         String token = getJwtProvider().generateToken(authenticate);
-        return new AuthenticationResponse(token, loginRequest.getUsername());
+        return AuthenticationResponse.builder()
+                .authenticationToken(token)
+                .refreshToken(getRefreshTokenService().generateRefreshToken().getToken())
+                .expiresAt(Instant.now().plusMillis(getJwtProvider().getJwtExpirationInMillis()))
+                .username(loginRequest.getUsername())
+                .build();
     }
 
     public boolean isLoggedIn() {
@@ -96,7 +103,18 @@ public class AuthService {
     public User getCurrentUser() {
         org.springframework.security.core.userdetails.User principal = (org.springframework.security.core.userdetails.User) SecurityContextHolder.
                 getContext().getAuthentication().getPrincipal();
-        return userRepository.findByUsername(principal.getUsername())
+        return getUserRepository().findByUsername(principal.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User name not found - " + principal.getUsername()));
+    }
+
+    public AuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
+        getRefreshTokenService().validateRefreshToken(refreshTokenRequest.getRefreshToken());
+        String token = getJwtProvider().generateTokenWithUserName(refreshTokenRequest.getUsername());
+        return AuthenticationResponse.builder()
+                .authenticationToken(token)
+                .refreshToken(refreshTokenRequest.getRefreshToken())
+                .expiresAt(Instant.now().plusMillis(getJwtProvider().getJwtExpirationInMillis()))
+                .username(refreshTokenRequest.getUsername())
+                .build();
     }
 }
